@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var Siparisler map[*Siparis]bool
+var Siparisler map[string]*Siparis
 
 type Siparis struct {
 	Code        string `json:"code"`
@@ -15,7 +15,7 @@ type Siparis struct {
 
 func init() {
 	fmt.Println("Sipariş Kütüphanesi çalıştırıldı")
-	Siparisler = map[*Siparis]bool{}
+	Siparisler = map[string]*Siparis{}
 }
 
 func NewSiparis(description string) *Siparis {
@@ -24,6 +24,6 @@ func NewSiparis(description string) *Siparis {
 		Description: description,
 		IsDelivered: false,
 	}
-	Siparisler[siparis] = true
+	Siparisler[siparis.Code] = siparis
 	return siparis
 }

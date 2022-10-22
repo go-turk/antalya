@@ -14,6 +14,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/siparis/ver", SiparisVer).Methods("POST")
 	r.HandleFunc("/siparisler", TumSiparisler).Methods("GET")
+	// siparişi teslim edil olarak değiştirmesini istiyoruz.
 	fmt.Println(":9096 çalışmaya başladı")
 	http.ListenAndServe(":9096", r)
 	// - Sipariş ekleme
@@ -31,7 +32,7 @@ func ilksiparisdenemeleri() {
 	} else {
 		fmt.Println("Sipariş henüz Teslim edilmedi")
 	}
-	order.Siparisler[ilkSiparis] = true
+	order.Siparisler[ilkSiparis.Code] = ilkSiparis
 	fmt.Println(order.Siparisler)
 }
 
@@ -63,11 +64,10 @@ func SiparisVer(w http.ResponseWriter, r *http.Request) {
 
 func TumSiparisler(w http.ResponseWriter, r *http.Request) {
 	siparisler := []order.Siparis{}
-	for siparis, durum := range order.Siparisler {
+
+	for _, siparis := range order.Siparisler {
 		fmt.Println(siparis.Code)
-		if durum {
-			siparisler = append(siparisler, *siparis)
-		}
+		siparisler = append(siparisler, *siparis)
 	}
 	json.NewEncoder(w).Encode(siparisler)
 }
