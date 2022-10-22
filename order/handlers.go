@@ -61,7 +61,7 @@ func Tamamlandi(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Sipariş tamamlandı."))
 	} else {
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Sipariş kodu bulunamadı!"))
 	}
 }
