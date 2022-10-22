@@ -1,19 +1,21 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"github.com/go-turk/antalya/order"
 	"github.com/gorilla/mux"
-	"net/http"
 )
 
 func main() {
 	//ilksiparisdenemeleri()
 	// Birinci : Bir Router Tanımlayalım
 	r := mux.NewRouter()
-	r.HandleFunc("/siparis/ver", SiparisVer).Methods("POST")
-	r.HandleFunc("/siparisler", TumSiparisler).Methods("GET")
+	r.StrictSlash(true)
+	r.HandleFunc("/siparis/ver", order.SiparisVer).Methods("POST")
+	r.HandleFunc("/siparisler", order.TumSiparisler).Methods("GET")
+	r.HandleFunc("/siparisler/tamamlandi/{uuid}", order.Tamamlandi).Methods("PUT")
 	// siparişi teslim edil olarak değiştirmesini istiyoruz.
 	fmt.Println(":9096 çalışmaya başladı")
 	http.ListenAndServe(":9096", r)
@@ -34,40 +36,4 @@ func ilksiparisdenemeleri() {
 	}
 	order.Siparisler[ilkSiparis.Code] = ilkSiparis
 	fmt.Println(order.Siparisler)
-}
-
-func SiparisVer(w http.ResponseWriter, r *http.Request) {
-	// bir dışarıdan gelen veriyi tutacağımız nesneyi oluşturduk
-	var requestBody struct {
-		Description string `json:"description"`
-		IsUser      bool   `json:"is_user"`
-	}
-	// dışarıdan gelen veriyi tuttuk
-	json.NewDecoder(r.Body).Decode(&requestBody)
-
-	if requestBody.Description == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Lütfen sipariş açıklaması giriniz"))
-		return
-	}
-
-	if !requestBody.IsUser {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Sadece Bu hizmetten müşterilerimiz yararlanabilir. Lütfen öncelikli olarak kayıt olunuz."))
-		return
-	}
-	// yeni bir sipariş oluşturduk
-	siparis := order.NewSiparis(requestBody.Description)
-	// yeni siparişin bilgilerini kullanıcı ile paylaştık
-	json.NewEncoder(w).Encode(siparis)
-}
-
-func TumSiparisler(w http.ResponseWriter, r *http.Request) {
-	siparisler := []order.Siparis{}
-
-	for _, siparis := range order.Siparisler {
-		fmt.Println(siparis.Code)
-		siparisler = append(siparisler, *siparis)
-	}
-	json.NewEncoder(w).Encode(siparisler)
 }
