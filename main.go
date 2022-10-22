@@ -14,6 +14,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/siparis/ver", SiparisVer).Methods("POST")
 	r.HandleFunc("/siparisler", TumSiparisler).Methods("GET")
+	r.HandleFunc("/siparis/tamamlandi/{id}", SiparisTamamlandi).Methods("GET")
 	// siparişi teslim edil olarak değiştirmesini istiyoruz.
 	fmt.Println(":9096 çalışmaya başladı")
 	http.ListenAndServe(":9096", r)
@@ -21,6 +22,18 @@ func main() {
 	// - Sipariş teslim etme
 	// 1. adımda inMemory (Projenin içinde bir değişkene kaydedeceğiz)
 	// 2. adımda bunları postgreSQL denilen Database'e kaydedeceğiz.
+}
+
+func SiparisTamamlandi(writer http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	id := vars["id"]
+	if siparis, ok := order.Siparisler[id]; ok {
+		siparis.IsDelivered = true
+		writer.Write([]byte("Siparişiniz başarı ile teslim edildi."))
+		return
+	}
+	writer.Write([]byte("Sipariş Bulunamadı"))
+	return
 }
 
 func ilksiparisdenemeleri() {
