@@ -11,9 +11,8 @@ import (
 func SiparisVer(w http.ResponseWriter, r *http.Request) {
 	// bir dışarıdan gelen veriyi tutacağımız nesneyi oluşturduk
 	var requestBody struct {
-		Description string  `json:"description"`
-		IsUser      bool    `json:"is_user"`
-		Price       float64 `json:"price"`
+		Description string `json:"description"`
+		IsUser      bool   `json:"is_user"`
 	}
 	// dışarıdan gelen veriyi tuttuk
 	json.NewDecoder(r.Body).Decode(&requestBody)
@@ -30,12 +29,7 @@ func SiparisVer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// yeni bir sipariş oluşturduk
-	siparis, err := NewSiparis(requestBody.Description, requestBody.Price)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
-		return
-	}
+	siparis := NewSiparis(requestBody.Description)
 	// yeni siparişin bilgilerini kullanıcı ile paylaştık
 	json.NewEncoder(w).Encode(siparis)
 }
@@ -57,8 +51,8 @@ func Tamamlandi(w http.ResponseWriter, r *http.Request) {
 	// boş mu diye kontrol ettik
 	if siparisId == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Lütfen sipariş kodu giriniz"))
-		return
+        w.Write([]byte("Lütfen sipariş kodu giriniz"))
+        return
 	}
 
 	// sipariş bulunduysa tamalnadı olarak kaydettik. bulunamadısa bulunamadı diye döndürdük.
