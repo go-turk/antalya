@@ -26,11 +26,7 @@ func main() {
 }
 
 func ilksiparisdenemeleri() {
-	ilkSiparis, err := order.NewSiparis("2 ekmek 1 çay", 15.75)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	ilkSiparis := order.NewSiparis("2 ekmek 1 çay")
 	fmt.Println("siparis id:", ilkSiparis.Code)
 	fmt.Println("siparis açıklaması:", ilkSiparis.Description)
 	if ilkSiparis.IsDelivered {
