@@ -6,6 +6,8 @@ import (
 	"github.com/google/uuid"
 )
 
+const NegativePriceError = "siparisin fiyatı negatif olamaz"
+
 var Siparisler map[string]*Siparis
 
 type Siparis struct {
@@ -22,7 +24,7 @@ func init() {
 
 func NewSiparis(description string, price float64) (*Siparis, error) {
 	if price <= 0 {
-		return nil, errors.New("siparisin fiyatı negatif olamaz")
+		return nil, errors.New(NegativePriceError)
 	}
 	siparis := &Siparis{
 		Code:        uuid.New().String(),
