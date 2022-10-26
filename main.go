@@ -15,7 +15,8 @@ func main() {
 	r.StrictSlash(true)
 	r.HandleFunc("/siparis/ver", order.SiparisVer).Methods("POST")
 	r.HandleFunc("/siparisler", order.TumSiparisler).Methods("GET")
-	r.HandleFunc("/siparisler/tamamlandi/{uuid}", order.Tamamlandi).Methods("PUT")
+	r.HandleFunc("/siparisler/teslimet/{id}", order.TeslimEt).Methods("PUT")
+	r.HandleFunc("/siparisler/iptal/{id}", order.IptalEt).Methods("PUT")
 	// siparişi teslim edil olarak değiştirmesini istiyoruz.
 	fmt.Println(":9096 çalışmaya başladı")
 	http.ListenAndServe(":9096", r)

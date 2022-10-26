@@ -44,24 +44,52 @@ func TumSiparisler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(siparisler)
 }
 
-func Tamamlandi(w http.ResponseWriter, r *http.Request) {
-	// sipariş id aldık
-	siparisId := mux.Vars(r)["uuid"]
+func TeslimEt(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	siparis := Siparisler[id]
 
-	// boş mu diye kontrol ettik
-	if siparisId == "" {
-		w.WriteHeader(http.StatusBadRequest)
-        w.Write([]byte("Lütfen sipariş kodu giriniz"))
-        return
-	}
-
-	// sipariş bulunduysa tamalnadı olarak kaydettik. bulunamadısa bulunamadı diye döndürdük.
-	if siparis, ok := Siparisler[siparisId]; ok {
+	//Sipariş teslim edilmeden iptal edilmişse engellenir.
+	if siparis.IsCanceled == true {
+		w.Write([]byte("İade edilmiş bir siparişi teslim edemezsin..."))
+		return
+		//Teslim edilen ürün engelelnir.
+	} else if siparis.IsDelivered == true {
+		w.Write([]byte("Ürün zaten teslim edilmiş..."))
+		return
+		//Ürün teslim edilir.
+	} else if siparis != nil {
 		siparis.IsDelivered = true
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Sipariş tamamlandı."))
-	} else {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Sipariş kodu bulunamadı!"))
+		w.Write([]byte("Siparişiniz teslim edildi..."))
+		return
 	}
+	w.Write([]byte("Sipariş Bulunamadı..."))
+}
+
+func IptalEt(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	siparis := Siparisler[id]
+
+	//Ürün iptal edilmişse ve teslim edilmemişse iptal edilemez.
+	if siparis.IsCanceled == true && siparis.IsDelivered == false {
+		w.Write([]byte("Ürün zaten iptal edilmiş..."))
+		return
+		//Ürün teslim edilmemişse iptal edilir.
+	} else if siparis.IsDelivered == false {
+		siparis.IsCanceled = true
+		w.Write([]byte("Sipariş İptal Edildi..."))
+		return
+		//Teslim edilmişse iade süreci başlar
+	} else if siparis.IsDelivered == true {
+		siparis.IsDelivered = false
+		w.Write([]byte("İade süreci başlatıldı.."))
+		siparis.IsCanceled = true
+		w.Write([]byte("iade edildi..."))
+		return
+	}
+
+	//Bu kurguyu çalıştıramadım.
+	w.Write([]byte("Sipariş Bulunamadı..."))
+
 }
