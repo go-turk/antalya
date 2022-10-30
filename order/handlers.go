@@ -13,6 +13,7 @@ func SiparisVer(w http.ResponseWriter, r *http.Request) {
 	var requestBody struct {
 		Description string `json:"description"`
 		IsUser      bool   `json:"is_user"`
+		IsUserID    int    `json:"is_user_id"`
 	}
 	// dışarıdan gelen veriyi tuttuk
 	json.NewDecoder(r.Body).Decode(&requestBody)
@@ -28,6 +29,13 @@ func SiparisVer(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Sadece Bu hizmetten müşterilerimiz yararlanabilir. Lütfen öncelikli olarak kayıt olunuz."))
 		return
 	}
+
+	if requestBody.IsUserID%7 != 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Böyle bir kullanıcı bulunamadı! Lütfen UserID'nizi doğru girdiğinden emin olunuz!"))
+		return
+	}
+
 	// yeni bir sipariş oluşturduk
 	siparis := NewSiparis(requestBody.Description)
 	// yeni siparişin bilgilerini kullanıcı ile paylaştık
