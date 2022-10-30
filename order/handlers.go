@@ -19,7 +19,7 @@ func SiparisVer(w http.ResponseWriter, r *http.Request) {
 
 	if requestBody.Description == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Lütfen sipariş açıklaması giriniz"))
+		w.Write([]byte("Lütfen sipariş açıklaması giriniz."))
 		return
 	}
 
