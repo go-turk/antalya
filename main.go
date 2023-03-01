@@ -17,7 +17,6 @@ func main() {
 	r.HandleFunc("/siparisler", order.TumSiparisler).Methods("GET")
 	r.HandleFunc("/siparisler/teslimet/{id}", order.TeslimEt).Methods("PUT")
 	r.HandleFunc("/siparisler/iptal/{id}", order.IptalEt).Methods("PUT")
-	r.HandleFunc("/siparis/fiyat-sorgula", order.FiyatSorgula).Methods("POST")
 	// siparişi teslim edil olarak değiştirmesini istiyoruz.
 	fmt.Println(":9096 çalışmaya başladı")
 	http.ListenAndServe(":9096", r)

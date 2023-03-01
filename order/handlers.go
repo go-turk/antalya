@@ -3,7 +3,6 @@ package order
 import (
 	"encoding/json"
 	"fmt"
-	"math"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -101,37 +100,4 @@ func IptalEt(w http.ResponseWriter, r *http.Request) {
 	//Bu kurguyu çalıştıramadım.
 	w.Write([]byte("Sipariş Bulunamadı..."))
 
-}
-
-func FiyatSorgula(w http.ResponseWriter, r *http.Request) {
-	var requestBody struct {
-		StoreLocation struct {
-		X float64
-		Y float64
-		} `json:"store_location"`
-		CustomerLocation struct {
-		X float64
-		Y float64
-		} `json:"customer_location"`
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-        w.Write([]byte(err.Error()))
-        return
-	}
-
-	width := requestBody.StoreLocation.X - requestBody.CustomerLocation.X
-	height := requestBody.StoreLocation.Y - requestBody.CustomerLocation.Y
-	hypotenuse := math.Sqrt(width*width + height*height)
-
-	price := hypotenuse * 25
-
-	response := map[string]interface{}{
-		"message": "price calculated successfully!",
-		"price": price,
-	}
-
-
-	json.NewEncoder(w).Encode(response)	
 }
